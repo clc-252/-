@@ -32,7 +32,14 @@ export default {
     handleBlur() {
       let value = event.target.value;
       if (this.rules && !this.rules.test(value)) {
-        console.log(this.msg || "输入不正确");
+        //   console.log(this.msg || "输入不正确");
+        // 在组件中使用---按需引入
+        this.$toast.fail(this.msg||'输入不正确');
+        // 还可以设置多个属性
+        // this.$toast.fail({
+        //   message: this.msg || "输入不正确",
+        //   duration: 5000
+        // });
       }
     }
   }

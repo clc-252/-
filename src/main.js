@@ -8,6 +8,10 @@ Vue.config.productionTip = false
 // 在这个文件中引入路由模块
 import router from '@/router/index.js'
 
+// 引入vant框架
+import { Toast } from 'vant'
+Vue.use(Toast)
+
 new Vue({
   // 注入
   router,
