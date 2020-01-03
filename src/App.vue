@@ -12,5 +12,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang='less'>
+/* 引入图标样式文件 */
+@import url('http://at.alicdn.com/t/font_1426139_h6vn3jbl5q.css');
 </style>
