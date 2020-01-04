@@ -75,8 +75,7 @@ export default {
       // 第一步：验证用户输入的信息是否有效
       if(/^(\d{5,6})$|^(1\d{10})$/.test(this.users.username)&&/^\S{3,16}$/.test(this.users.password)){
         // 第二步，如果验证成功，则发起请求
-        /* 
-          await：
+        /*  await：
             1.可以获取当前操作的返回结果
             2.await可以让后续的操作等待，只是执行完当前使用await标记的方法之后才会执行后续的操作
         */
@@ -86,7 +85,10 @@ export default {
         //  如果用户不存在，就提示用户
         this.$toast.fail(res.data.message)
        }else{
+        //  如果登陆成功，就把接收到的数据中的token值存到本地
+        localStorage.setItem('userLogin_token',res.data.data.token)
         //  如果登陆成功就跳转到相应的页面
+        this.$router.push({name:'Personal'})
        }
       }else{
         // 如果用户输入的信息验证不成功，就提示用户输入的信息有误
