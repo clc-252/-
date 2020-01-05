@@ -23,8 +23,10 @@
 import hmheader from "@/components/hmheader.vue";
 // 引入用户资料的列表
 import personalcell from "@/components/personalcell.vue";
-// 引入封装的获取用户数据的api
-import { getUserById } from "@/apis/user.js";
+// 引入封装的获取用户数据的api、修改用户信息的方法
+import { getUserById,updataUserById } from "@/apis/user.js";
+// 引入封装的实现文件上传的方法
+import { uploadFile } from "@/apis/upload.js";
 export default {
   components: {
     hmheader,
@@ -51,11 +53,33 @@ export default {
         }
     }
   },
+  // 调用方法实现文件的上传
   methods: {
     // 文件上传完毕后会触发after-read回调函数，获取到对应的file对象
-    afterRead(file) {
+    async afterRead(file) {
       // 此时可以自行将文件上传至服务器
       console.log(file);
+      let formdata=new FormData();
+      // file.file:是当前的文件对象
+      formdata.append('file',file.file)
+      let res=await uploadFile(formdata)
+      console.log(res);
+      if(res.data.message==='文件上传成功'){
+        // 修改用户头像的路径，实现预览功能，刷新之后变回原来的图像文件
+          this.currentUser.head_img='http://127.0.0.1:3000'+res.data.data.url
+        // 调用updataUserById方法修改用户头像
+        let updataRes=await updataUserById(this.currentUser.id,{head_img:res.data.data.url})
+        console.log(updataRes);
+        if(updataRes.data.message==='修改成功'){
+            // 修改成功提示用户
+            this.$toast.success(updataRes.data.message)
+        }else{
+            // 提示用户修改失败
+            this.$toast.fail(updataRes.data.message)
+        }
+      }else{
+          this.$toast.fail('文件上传失败')
+      }
     }
   }
 };

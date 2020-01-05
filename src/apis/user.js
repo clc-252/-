@@ -19,3 +19,12 @@ export const getUserById=(id)=>{
         // headers:{'Authorization':localStorage.getItem('userLogin_token')}
     })
 }
+
+// 封装一个可以更新用户信息的方法
+export const updataUserById=(id,data)=>{
+    return axios({
+        method:'post',
+        url:`/user_update/${id}`,
+        data
+    })
+}
