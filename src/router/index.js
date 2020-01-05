@@ -24,7 +24,7 @@ let router = new VueRouter({
         // 个人中心页的路由
         {
             name: 'Personal',
-            path: '/personal',
+            path: '/personal/:id',
             component: Personal
         }
     ]

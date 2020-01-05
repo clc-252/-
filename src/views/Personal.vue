@@ -1,14 +1,14 @@
 <template>
   <div class="personal">
-      <router-link to="/edit_profile">
+    <router-link to="/edit_profile">
       <div class="profile">
         <!-- $axios.defaults.baseURL读取axios的服务器路径 -->
-        <img src="http://img1.imgtn.bdimg.com/it/u=3757784226,1202878475&fm=26&gp=0.jpg" alt />
+        <img :src="currentUser.head_img" alt />
         <div class="profile-center">
           <div class="name">
-            <span class="iconfont iconxingbienan"></span>我就是我
+            <span class="iconfont iconxingbienan"></span>{{currentUser.nickname}}
           </div>
-          <div class="time">2019-9-24</div>
+          <div class="time">{{currentUser.create_data}}</div>
         </div>
         <span class="iconfont iconjiantou1"></span>
       </div>
@@ -23,24 +23,46 @@
 
 <script>
 // 引入personalcell.vue
-import personalcell from '@/components/personalcell.vue'
+import personalcell from "@/components/personalcell.vue";
 // 引入封装的按钮
-import hmbutton from '@/components/hmbutton.vue'
+import hmbutton from "@/components/hmbutton.vue";
+// 引入user.js
+import { getUserById } from "@/apis/user.js";
 export default {
-  components:{
-    personalcell,hmbutton
+  components: {
+    personalcell,
+    hmbutton
+  },
+  data() {
+    return {
+      // 当前登录的用户对象
+      currentUser: {}
+    };
+  },
+  async mounted() {
+    console.log(this.$route.params.id);
+    let res = await getUserById(this.$route.params.id);
+    console.log(res);
+    if(res.data.message==='获取成功'){
+      this.currentUser=res.data.data
+      // 将图片路径补充完整
+      this.currentUser.head_img='http://127.0.0.1:3000'+this.currentUser.head_img
+    }else if(res.data.message==='用户信息验证失败'){
+      // 验证失败，跳回登录页进行登录
+      this.$router.push({name:'Login'})
+    }
   }
-}
+};
 </script>
 
 <style lang='less' scoped>
-.personal{
-    width: 100vw;
-    height: 100vh;
-    background-color: #eee;
+.personal {
+  width: 100vw;
+  height: 100vh;
+  background-color: #eee;
 }
-a{
-    color: #666;
+a {
+  color: #666;
 }
 .profile {
   display: flex;
@@ -72,7 +94,7 @@ a{
     margin-top: 5px;
   }
 }
-.btn{
+.btn {
   margin: 20px auto;
 }
 </style>

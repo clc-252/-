@@ -87,8 +87,12 @@ export default {
        }else{
         //  如果登陆成功，就把接收到的数据中的token值存到本地
         localStorage.setItem('userLogin_token',res.data.data.token)
+        // 将用户数据保存到本地
+        localStorage.setItem('userData',JSON.stringify(res.data.data.user))
         //  如果登陆成功就跳转到相应的页面
-        this.$router.push({name:'Personal'})
+        // this.$router.push({name:'Personal'})
+        // 因为需要传递参数，根据用户id来获取用户的数据，所以不推荐使用name的方式来跳转页面
+        this.$router.push({path: `/personal/${res.data.data.user.id}`})
        }
       }else{
         // 如果用户输入的信息验证不成功，就提示用户输入的信息有误
