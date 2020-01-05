@@ -9,8 +9,9 @@ Vue.config.productionTip = false
 import router from '@/router/index.js'
 
 // 引入vant框架
-import { Toast } from 'vant'
-Vue.use(Toast)
+import { Toast,Icon } from 'vant'
+Vue.use(Toast) // Toast 轻提示
+   .use(Icon)  // Icon 图标
 
 new Vue({
   // 注入

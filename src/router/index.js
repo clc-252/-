@@ -10,6 +10,8 @@ Vue.use(VueRouter)
 import Login from '@/views/Login.vue'
 // 2.个人中心
 import Personal from '@/views/Personal.vue'
+// 3.编辑个人信息
+import EditPersonal from '@/views/EditPersonal.vue'
 
 // 创建路由对象
 let router = new VueRouter({
@@ -26,6 +28,12 @@ let router = new VueRouter({
             name: 'Personal',
             path: '/personal/:id',
             component: Personal
+        },
+        // 编辑个人信息的路由
+        {
+            name:'EditPersonal',
+            path:'/editPersonal/:id',
+            component:EditPersonal
         }
     ]
 })
