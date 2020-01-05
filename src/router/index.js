@@ -48,6 +48,7 @@ router.beforeEach((to, from, next) => {
             next({
                 name: 'Login'
             })
+            // next()
         }
     }else{
         // 如果访问的是不需要验证的页面，如浏览新闻，则不需要进行验证，可以进行下一步操作

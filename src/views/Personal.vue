@@ -8,7 +8,7 @@
           <div class="name">
             <span class="iconfont iconxingbienan"></span>{{currentUser.nickname}}
           </div>
-          <div class="time">{{currentUser.create_data}}</div>
+          <div class="time">{{currentUser.create_date}}</div>
         </div>
         <span class="iconfont iconjiantou1"></span>
       </div>

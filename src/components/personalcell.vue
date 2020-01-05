@@ -16,7 +16,7 @@ export default {
     display: flex;
     padding: 20px 10px;
     justify-content: space-between;
-    border-bottom: 1px solid #e4e4e4;
+    border-bottom: 2px solid #e4e4e4;
     > .right{
         font-size: 13px;
         color: #a0a0a0;
