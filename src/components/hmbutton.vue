@@ -18,7 +18,7 @@ export default {
 
 <style lang='less' scoped>
 .btn {
-    width: 318*100/360;
+    width: 318*100/360vw;
     height: 48px;
     background-color: #cc3300;
     color: #fff;
