@@ -1,5 +1,5 @@
 <template>
-  <div class="cell">
+  <div class="cell" @click="handlerclick">
       <div class="left">{{title}}</div>
       <div class="right">{{desc}}&nbsp;<span class="iconfont iconjiantou1"></span></div>
   </div>
@@ -7,7 +7,13 @@
 
 <script>
 export default {
-    props:['title','desc']
+    props:['title','desc'],
+    methods:{
+        // 当cell被点击时处理
+        handlerclick(event){
+            this.$emit('click',event)
+        }
+    }
 }
 </script>
 

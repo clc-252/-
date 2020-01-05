@@ -8,11 +8,16 @@
       <i class="iconfont iconjiantou2" slot="left" @click="$router.back()"></i>
     </hmheader>
     <div class="userimg">
-      <img :src="currentUser.head_img"  />
+      <img :src="currentUser.head_img" />
       <!-- 使用upload -->
       <van-uploader :after-read="afterRead" />
     </div>
-    <personalcell title="昵称" :desc="currentUser.nickname"></personalcell>
+    <personalcell title="昵称" :desc="currentUser.nickname" @click="nickshow=!nickshow"></personalcell>
+    <!-- 使用dialog弹出框 -->
+    <van-dialog v-model="nickshow" title="修改昵称" show-cancel-button @confirm='updateNickname'>
+        <!-- 这里不可以使用v-model双向绑定，因为当用户输入后点击取消后，页面上原本的数据内容也会发生改变 -->
+      <van-field :value="currentUser.nickname"  required label="昵称" placeholder="请输入昵称" ref="nick" />
+    </van-dialog>
     <personalcell title="密码" :desc="currentUser.password"></personalcell>
     <personalcell title="性别" :desc="currentUser.gender?'男':'女'"></personalcell>
   </div>
@@ -24,7 +29,7 @@ import hmheader from "@/components/hmheader.vue";
 // 引入用户资料的列表
 import personalcell from "@/components/personalcell.vue";
 // 引入封装的获取用户数据的api、修改用户信息的方法
-import { getUserById,updataUserById } from "@/apis/user.js";
+import { getUserById, updataUserById } from "@/apis/user.js";
 // 引入封装的实现文件上传的方法
 import { uploadFile } from "@/apis/upload.js";
 export default {
@@ -35,7 +40,9 @@ export default {
   data() {
     return {
       // 当前登录的用户数据
-      currentUser: {}
+      currentUser: {},
+      // 设置修改昵称对话框是否可见
+      nickshow: false
     };
   },
   async mounted() {
@@ -43,14 +50,16 @@ export default {
     let res = await getUserById(this.$route.params.id);
     console.log(res);
     // 如果数据获取成功
-    if(res.data.message==='获取成功'){
-        this.currentUser = res.data.data;
-        if(this.currentUser.head_img){
-            this.currentUser.head_img='http://127.0.0.1:3000'+this.currentUser.head_img
-        }else{
-            // 如果没有图片，则给定一张默认图片
-            this.currentUser.head_img='http://127.0.0.1:3000/uploads/image/IMG1568705287936.jpeg'
-        }
+    if (res.data.message === "获取成功") {
+      this.currentUser = res.data.data;
+      if (this.currentUser.head_img) {
+        this.currentUser.head_img =
+          "http://127.0.0.1:3000" + this.currentUser.head_img;
+      } else {
+        // 如果没有图片，则给定一张默认图片
+        this.currentUser.head_img =
+          "http://127.0.0.1:3000/uploads/image/IMG1568705287936.jpeg";
+      }
     }
   },
   // 调用方法实现文件的上传
@@ -59,27 +68,45 @@ export default {
     async afterRead(file) {
       // 此时可以自行将文件上传至服务器
       console.log(file);
-      let formdata=new FormData();
+      let formdata = new FormData();
       // file.file:是当前的文件对象
-      formdata.append('file',file.file)
-      let res=await uploadFile(formdata)
+      formdata.append("file", file.file);
+      let res = await uploadFile(formdata);
       console.log(res);
-      if(res.data.message==='文件上传成功'){
+      if (res.data.message === "文件上传成功") {
         // 修改用户头像的路径，实现预览功能，刷新之后变回原来的图像文件
-          this.currentUser.head_img='http://127.0.0.1:3000'+res.data.data.url
+        this.currentUser.head_img = "http://127.0.0.1:3000" + res.data.data.url;
         // 调用updataUserById方法修改用户头像
-        let updataRes=await updataUserById(this.currentUser.id,{head_img:res.data.data.url})
+        let updataRes = await updataUserById(this.currentUser.id, {
+          head_img: res.data.data.url
+        });
         console.log(updataRes);
-        if(updataRes.data.message==='修改成功'){
-            // 修改成功提示用户
-            this.$toast.success(updataRes.data.message)
-        }else{
-            // 提示用户修改失败
-            this.$toast.fail(updataRes.data.message)
+        if (updataRes.data.message === "修改成功") {
+          // 修改成功提示用户
+          this.$toast.success(updataRes.data.message);
+        } else {
+          // 提示用户修改失败
+          this.$toast.fail(updataRes.data.message);
         }
-      }else{
-          this.$toast.fail('文件上传失败')
+      } else {
+        this.$toast.fail("文件上传失败");
       }
+    },
+    // 修改昵称
+    async updateNickname(){
+        // 获取用户输入的内容
+        // let name=this.$refs.nick  // 这样得到的是当前的文本框组件
+        let name=this.$refs.nick.$refs.input.value
+        // console.log(name);
+        // 修改昵称
+        let res=await updataUserById(this.currentUser.id,{nickname:name})
+        if(res.data.message==='修改成功'){
+            // 更新页面数据
+            this.currentUser.nickname=name
+            this.$toast.success(res.data.message)
+        }else{
+            this.$toast.fail(res.data.message)
+        }
     }
   }
 };
@@ -99,16 +126,16 @@ export default {
     transform: translate(-50%, -50%);
   }
   // 深度作用选择器：使 scoped 样式中的一个选择器能够作用得“更深”，例如影响子组件
-  /deep/.van-uploader__upload{
+  /deep/.van-uploader__upload {
     width: 90/360 * 100vw;
     height: 90/360 * 100vw;
   }
-  /deep/.van-uploader{
-      position: absolute;
-      top: 53%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      opacity: 0;
+  /deep/.van-uploader {
+    position: absolute;
+    top: 53%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
   }
 }
 </style>
