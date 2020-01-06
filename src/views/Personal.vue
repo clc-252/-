@@ -17,7 +17,7 @@
     <personalcell title="我的跟帖" desc="跟帖/回复"></personalcell>
     <personalcell title="我的收藏" desc="文章/视频"></personalcell>
     <personalcell title="设置"></personalcell>
-    <hmbutton>退出</hmbutton>
+    <hmbutton @click="exit">退出</hmbutton>
   </div>
 </template>
 
@@ -50,6 +50,15 @@ export default {
     }else if(res.data.message==='用户信息验证失败'){
       // 验证失败，跳回登录页进行登录
       this.$router.push({name:'Login'})
+    }
+  },
+  // 退出的方法
+  methods:{
+    exit(){
+      // 将本地存储的token值删除
+      localStorage.removeItem('userLogin_token')
+      // 跳转到浏览新闻主页
+      this.$router.push({name:'Index'})
     }
   }
 };

@@ -12,11 +12,20 @@ import Login from '@/views/Login.vue'
 import Personal from '@/views/Personal.vue'
 // 3.编辑个人信息
 import EditPersonal from '@/views/EditPersonal.vue'
+// 4.浏览新闻主页
+import Index from '@/views/Index.vue'
+
 
 // 创建路由对象
 let router = new VueRouter({
     // 配置路由
     routes: [
+        // 浏览新闻首页的路由
+        {
+            name:'Index',
+            path:'/',
+            component:Index
+        },
         // 登陆的路由
         {
             name: 'Login',
