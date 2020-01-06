@@ -37,7 +37,13 @@
     </van-dialog>
 
     <!-- 用户性别 -->
-    <personalcell title="性别" :desc="currentUser.gender?'男':'女'"></personalcell>
+    <personalcell title="性别" :desc="currentUser.gender?'男':'女'" @click="gendershow=!gendershow"></personalcell>
+    <!-- 使用dialog弹出框(这是修改性别的弹出框) -->
+    <van-dialog v-model="gendershow" title="修改性别" show-cancel-button @confirm="updateGender">
+      <!-- 这里不可以使用v-model双向绑定，因为当用户输入后点击取消后，页面上原本的数据内容也会发生改变 -->
+      <!-- columns要先写女再写男，因为这样搞好对应的索引为0和1，方便之后的操作 -->
+      <van-picker :columns="['女','男']" :default-index="currentUser.gender" @change="onChange" />
+    </van-dialog>
   </div>
 </template>
 
@@ -62,7 +68,9 @@ export default {
       // 设置修改昵称对话框是否可见
       nickshow: false,
       // 设置修改密码框是否可见
-      passwordshow:false
+      passwordshow: false,
+      // 设置修改性别对话框是否可见
+      gendershow: false
     };
   },
   async mounted() {
@@ -141,10 +149,13 @@ export default {
         this.$refs.oldpwd.$refs.input.focus();
         this.$toast.fail("原密码输入不正确，请重新输入");
         done(false);
-      } else if(action === "confirm" && !/^\S{3,16}$/.test(this.$refs.newpwd.$refs.input.value)){
+      } else if (
+        action === "confirm" &&
+        !/^\S{3,16}$/.test(this.$refs.newpwd.$refs.input.value)
+      ) {
         // 验证用户输入的新密码是否符合格式，不符合提示用户
-        this.$toast.fail('请输入3~6位的新密码')
-        done(false)
+        this.$toast.fail("请输入3~6位的新密码");
+        done(false);
       } else {
         done();
       }
@@ -154,21 +165,42 @@ export default {
       //  点击确认之后获取用户输入的原密码
       let oldpwd = this.$refs.oldpwd.$refs.input.value;
       // console.log(oldpwd);
-      if(oldpwd===this.currentUser.password){
+      if (oldpwd === this.currentUser.password) {
         // 获取输入的新密码
         let newpwd = this.$refs.newpwd.$refs.input.value;
-        if(/^\S{3,16}$/.test(newpwd)){
+        if (/^\S{3,16}$/.test(newpwd)) {
           // 如果用户输入的新密码符合格式要求，就修改密码
-          let res=await updataUserById(this.currentUser.id,{password:newpwd})
-          if(res.data.message==='修改成功'){
+          let res = await updataUserById(this.currentUser.id, {
+            password: newpwd
+          });
+          if (res.data.message === "修改成功") {
             // 修改页面上的密码
-            this.currentUser.password=newpwd
-            this.$toast.success(res.data.message)
-          }else{
-            this.$toast.fail(res.data.message)
+            this.currentUser.password = newpwd;
+            this.$toast.success(res.data.message);
+          } else {
+            this.$toast.fail(res.data.message);
           }
         }
       }
+    },
+    // 修改性别
+    async updateGender(){
+      // console.log(this.gender);
+      let res=await updataUserById(this.currentUser.id,{gender:this.gender})
+      // console.log(res);
+      if(res.data.message==='修改成功'){
+        this.currentUser.gender=this.gender
+        this.$toast.success(res.data.message)
+      }else{
+        this.$toast.fail(res.data.message)
+      }
+    },
+    // 当性别选项发生改变时触发
+    onChange(picker, value, index){
+      console.log(this.currentUser.gender)
+      this.$toast(`当前值：${value}, 当前索引：${index}`);
+      // 当性别选项发生改变时，将对应的索引值赋给性别这个属性，再通过这个属性来判断是男还是女
+      this.gender = index
     }
   }
 };
