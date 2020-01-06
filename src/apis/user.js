@@ -28,3 +28,12 @@ export const updataUserById=(id,data)=>{
         data
     })
 }
+
+// 封装一个实现用户注册的方法
+export const usersRegister=(data)=>{
+    return axios({
+        method:'post',
+        url:'/register',
+        data
+    })
+}

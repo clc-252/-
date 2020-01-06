@@ -8,7 +8,7 @@
           <div class="name">
             <span class="iconfont iconxingbienan"></span>{{currentUser.nickname}}
           </div>
-          <div class="time">{{currentUser.create_date}}</div>
+          <div class="time">{{currentUser.create_date|dateFormat}}</div>
         </div>
         <span class="iconfont iconjiantou1"></span>
       </div>
@@ -28,6 +28,8 @@ import personalcell from "@/components/personalcell.vue";
 import hmbutton from "@/components/hmbutton.vue";
 // 引入user.js
 import { getUserById } from "@/apis/user.js";
+// 引入全局过滤器
+import {dateFormat} from '@/utils/myfilters.js'
 export default {
   components: {
     personalcell,
@@ -60,6 +62,10 @@ export default {
       // 跳转到浏览新闻主页
       this.$router.push({name:'Index'})
     }
+  },
+  // 注册过滤器
+  filters:{
+    dateFormat
   }
 };
 </script>

@@ -14,6 +14,9 @@ import Personal from '@/views/Personal.vue'
 import EditPersonal from '@/views/EditPersonal.vue'
 // 4.浏览新闻主页
 import Index from '@/views/Index.vue'
+// 5.注册页面
+import Register from '@/views/Register.vue'
+
 
 
 // 创建路由对象
@@ -43,6 +46,12 @@ let router = new VueRouter({
             name:'EditPersonal',
             path:'/editPersonal/:id',
             component:EditPersonal
+        },
+        // 注册页面的路由
+        {
+            name:'Register',
+            path:'/register',
+            component:Register
         }
     ]
 })
