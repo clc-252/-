@@ -12,13 +12,31 @@
       <!-- 使用upload -->
       <van-uploader :after-read="afterRead" />
     </div>
+
+    <!-- 用户昵称部分 -->
     <personalcell title="昵称" :desc="currentUser.nickname" @click="nickshow=!nickshow"></personalcell>
-    <!-- 使用dialog弹出框 -->
-    <van-dialog v-model="nickshow" title="修改昵称" show-cancel-button @confirm='updateNickname'>
-        <!-- 这里不可以使用v-model双向绑定，因为当用户输入后点击取消后，页面上原本的数据内容也会发生改变 -->
-      <van-field :value="currentUser.nickname"  required label="昵称" placeholder="请输入昵称" ref="nick" />
+    <!-- 使用dialog弹出框(这是修改昵称的弹出框) -->
+    <van-dialog v-model="nickshow" title="修改昵称" show-cancel-button @confirm="updateNickname">
+      <!-- 这里不可以使用v-model双向绑定，因为当用户输入后点击取消后，页面上原本的数据内容也会发生改变 -->
+      <van-field :value="currentUser.nickname" required label="昵称" placeholder="请输入昵称" ref="nick" />
     </van-dialog>
-    <personalcell title="密码" :desc="currentUser.password"></personalcell>
+
+    <!-- 用户密码部分 -->
+    <personalcell title="密码" desc="******" @click="passwordshow=!passwordshow"></personalcell>
+    <!-- 使用dialog弹出框(这是修改密码的弹出框) -->
+    <van-dialog
+      v-model="passwordshow"
+      title="修改密码"
+      show-cancel-button
+      @confirm="updatePassword"
+      :before-close="beforeClose"
+    >
+      <!-- 这里不可以使用v-model双向绑定，因为当用户输入后点击取消后，页面上原本的数据内容也会发生改变 -->
+      <van-field required label="原密码" placeholder="请输入原密码" ref="oldpwd" />
+      <van-field required label="新密码" placeholder="请输入新密码" ref="newpwd" />
+    </van-dialog>
+
+    <!-- 用户性别 -->
     <personalcell title="性别" :desc="currentUser.gender?'男':'女'"></personalcell>
   </div>
 </template>
@@ -42,7 +60,9 @@ export default {
       // 当前登录的用户数据
       currentUser: {},
       // 设置修改昵称对话框是否可见
-      nickshow: false
+      nickshow: false,
+      // 设置修改密码框是否可见
+      passwordshow:false
     };
   },
   async mounted() {
@@ -93,20 +113,62 @@ export default {
       }
     },
     // 修改昵称
-    async updateNickname(){
-        // 获取用户输入的内容
-        // let name=this.$refs.nick  // 这样得到的是当前的文本框组件
-        let name=this.$refs.nick.$refs.input.value
-        // console.log(name);
-        // 修改昵称
-        let res=await updataUserById(this.currentUser.id,{nickname:name})
-        if(res.data.message==='修改成功'){
-            // 更新页面数据
-            this.currentUser.nickname=name
+    async updateNickname() {
+      // 获取用户输入的内容
+      // let name=this.$refs.nick  // 这样得到的是当前的文本框组件
+      let name = this.$refs.nick.$refs.input.value;
+      // console.log(name);
+      // 修改昵称
+      let res = await updataUserById(this.currentUser.id, { nickname: name });
+      if (res.data.message === "修改成功") {
+        // 更新页面数据
+        this.currentUser.nickname = name;
+        this.$toast.success(res.data.message);
+      } else {
+        this.$toast.fail(res.data.message);
+      }
+    },
+    // 修改密码前的判断：判断原密码否输入正确
+    // action:当前的操作类型：cancel:取消   confirm:确认
+    // done：是否进行下一步
+    beforeClose(action, done) {
+      if (
+        action === "confirm" &&
+        this.$refs.oldpwd.$refs.input.value !== this.currentUser.password
+      ) {
+        // 当原密码输入不正确，将光标定到原密码输入框并全选输入的内容
+        this.$refs.oldpwd.$refs.input.select();
+        this.$refs.oldpwd.$refs.input.focus();
+        this.$toast.fail("原密码输入不正确，请重新输入");
+        done(false);
+      } else if(action === "confirm" && !/^\S{3,16}$/.test(this.$refs.newpwd.$refs.input.value)){
+        // 验证用户输入的新密码是否符合格式，不符合提示用户
+        this.$toast.fail('请输入3~6位的新密码')
+        done(false)
+      } else {
+        done();
+      }
+    },
+    // 修改密码
+    async updatePassword() {
+      //  点击确认之后获取用户输入的原密码
+      let oldpwd = this.$refs.oldpwd.$refs.input.value;
+      // console.log(oldpwd);
+      if(oldpwd===this.currentUser.password){
+        // 获取输入的新密码
+        let newpwd = this.$refs.newpwd.$refs.input.value;
+        if(/^\S{3,16}$/.test(newpwd)){
+          // 如果用户输入的新密码符合格式要求，就修改密码
+          let res=await updataUserById(this.currentUser.id,{password:newpwd})
+          if(res.data.message==='修改成功'){
+            // 修改页面上的密码
+            this.currentUser.password=newpwd
             this.$toast.success(res.data.message)
-        }else{
+          }else{
             this.$toast.fail(res.data.message)
+          }
         }
+      }
     }
   }
 };
