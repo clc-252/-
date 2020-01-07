@@ -28,6 +28,8 @@
 <script>
 // 引入获取栏目列表的方法
 import {getCategoryList} from '@/apis/category.js'
+// 引入获得当前栏目新闻数据的方法
+import {getPostList} from '@/apis/article.js'
 export default {
   data() {
     return {
@@ -41,10 +43,36 @@ export default {
   async mounted(){
     // 获取用户id，用户跳转到个人中心页
     this.id=JSON.parse(localStorage.getItem('userData')).id
+    // 获取所有栏目数据
     let res=await getCategoryList()
     console.log(res);
-    // 将栏目数据存起来
+    // 将栏目数据存到cateList中
     this.cateList=res.data.data
+    // console.log(this.cateList);
+
+    // ------------------------------- 重点理解内容：对数据进行改造 ------------------------------------
+    // 基于业务需求，我们可以对源数据进行改造，我们可以在每一个栏目对象中，添加用于存储这个栏目新闻数据的数组
+    // map()方法返回一个新的数组，数组中的元素为原始数组调用函数处理后的值
+    this.cateList=this.cateList.map(value=>{
+      return {
+        ...value,  // ...展开运算符，展开这个对象
+        postList:[],  // 当前这个栏目的新闻数据列表
+        pageIndex:1,  // 这个栏目的当前页码
+        pageSize:5    // 这个栏目每页所显示的新闻条数
+      }
+    })
+    // console.log(this.cateList[this.active]);  // 当前默认的栏目:this.cateList[this.active]
+
+    let res2=await getPostList({
+      pageIndex:this.cateList[this.active].pageIndex,
+      pageSize:this.cateList[this.active].pageSize,
+      category:this.cateList[this.active].id
+    })
+    // console.log(res2);
+    // 得到当前栏目数据之后，再渲染到页面
+    this.cateList[this.active].postList=res2.data.data
+    console.log(this.cateList[this.active].postList);
+    
   }
 };
 </script>
