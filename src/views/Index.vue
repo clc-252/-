@@ -19,9 +19,20 @@
       <!-- 通过v-model绑定当前激活标签对应的索引值，默认情况下启用第一个标签 -->
       <van-tabs v-model="active" swipeable sticky>
         <!-- 动态渲染数据 -->
+        <!-- 属性说明：immediate-check:是否默认触发一次load事件
+                      offset:	滚动条与底部距离小于 offset 时触发load事件 -->
         <van-tab :title="cate.name" v-for="cate in cateList" :key="cate.id">
-          <!-- 新闻列表：生成当前栏目的文章列表数据 -->
-          <hmarticleblock v-for="item in cate.postList" :key="item.id" :post="item"></hmarticleblock>
+          <van-list
+            v-model="cate.loading"
+            :finished="cate.finished"
+            finished-text="没有更多了"
+            @load="onLoad"
+            :immediate-check="false" 
+            :offset="10"
+          >
+            <!-- 新闻列表：生成当前栏目的文章列表数据 -->
+            <hmarticleblock v-for="item in cate.postList" :key="item.id" :post="item"></hmarticleblock>
+          </van-list>
         </van-tab>
       </van-tabs>
     </div>
@@ -63,39 +74,60 @@ export default {
         ...value, // ...展开运算符，展开这个对象
         postList: [], // 当前这个栏目的新闻数据列表
         pageIndex: 1, // 这个栏目的当前页码
-        pageSize: 10 // 这个栏目每页所显示的新闻条数
+        pageSize: 5, // 这个栏目每页所显示的新闻条数
+        // List 组件通过loading和finished两个变量控制加载状态，所以需要修改源数据，加入这两个变量来控制加载状态
+        loading: false, // 表示这个栏目的加载状态
+        finished: false // 表示这个栏目的数据是否加载完成
       };
     });
+    console.log(this.cateList);
     // console.log(this.cateList[this.active]);  // 当前默认的栏目:this.cateList[this.active]
 
     // 对数据进行渲染，调用handleData方法
-    this.handleData()
+    this.handleData();
   },
   components: {
     hmarticleblock
   },
   // 监听当前栏目active的变化
-  watch:{
-    active(){
+  watch: {
+    active() {
       // console.log(this.active);
       // 判断当前栏目是否已经加载过，如果以及加载过了就不要再发送请求
-      if(this.cateList[this.active].postList.length===0){
+      if (this.cateList[this.active].postList.length === 0) {
         this.handleData();
       }
     }
   },
-  // 将获取到当前栏目新闻数据之后的操作封装成一个方法
-  methods:{
-    async handleData(){
-    let res2 = await getPostList({
-      pageIndex: this.cateList[this.active].pageIndex,
-      pageSize: this.cateList[this.active].pageSize,
-      category: this.cateList[this.active].id
-    });
-    // console.log(res2);
-    // 得到当前栏目数据之后，再渲染到页面
-    this.cateList[this.active].postList = res2.data.data;
-    console.log(this.cateList[this.active]);
+  methods: {
+    // 将获取到当前栏目新闻数据之后的操作封装成一个方法
+    async handleData() {
+      let res2 = await getPostList({
+        pageIndex: this.cateList[this.active].pageIndex,
+        pageSize: this.cateList[this.active].pageSize,
+        category: this.cateList[this.active].id
+      });
+      // console.log(res2);
+      // 得到当前栏目数据之后，再渲染到页面
+      // this.cateList[this.active].postList = res2.data.data;
+      // 当数据加载好之后，手动将当前栏目的lodaing重置为false
+      this.cateList[this.active].loading = false;
+      // 当数据加载完成之后，手动的将当前栏目的finished重置为true,以显示没有更多数据的提示
+      if (res2.data.data.length < this.cateList[this.active].pageSize) {
+        this.cateList[this.active].finished = true;
+      }
+      // 加载新的数据，将下一页的数据显示到下一页的内容中
+      this.cateList[this.active].postList.push(...res2.data.data);
+      console.log(this.cateList[this.active]);
+    },
+
+    // 上拉加载
+    onLoad() {
+      // 要让当前页码数+1
+      this.cateList[this.active].pageIndex++;
+      setTimeout(() => {
+        this.handleData();
+      }, 3000);
     }
   }
 };

@@ -9,7 +9,7 @@ Vue.config.productionTip = false
 import router from '@/router/index.js'
 
 // 引入vant框架
-import { Toast,Icon,Uploader,Dialog,Field,Picker,Tab,Tabs } from 'vant'
+import { Toast,Icon,Uploader,Dialog,Field,Picker,Tab,Tabs,List } from 'vant'
 Vue.use(Toast) // Toast 轻提示
    .use(Icon)  // Icon 图标
    .use(Uploader) // Uploader 文件上传
@@ -18,6 +18,7 @@ Vue.use(Toast) // Toast 轻提示
    .use(Picker) // Picker 选择器
    .use(Tab)  // Tab 标签页
    .use(Tabs)
+   .use(List) // List 列表,用于展示长列表
 
 new Vue({
   // 注入
