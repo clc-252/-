@@ -5,7 +5,7 @@
         <van-icon name="arrow-left back" @click="$router.back()" />
         <span class="iconfont iconnew new"></span>
       </div>
-      <span>关注</span>
+      <span :class="{active:article.has_follow}" @click="followThisUser">{{article.has_follow?'已关注':'关注'}}</span>
     </div>
     <div class="detail">
       <div class="title">{{article.title}}</div>
@@ -51,6 +51,8 @@
 import { getArticleById } from "@/apis/article.js";
 // 引入全局过滤器
 import { dateFormat } from "@/utils/myfilters.js";
+// 引入实现关注和取消用户的方法
+import { followUser,unfollowUser } from "@/apis/user.js";
 export default {
   data() {
     return {
@@ -64,6 +66,22 @@ export default {
     let res = await getArticleById(this.$route.params.id);
     console.log(res);
     this.article = res.data.data;
+  },
+  methods:{
+    async followThisUser(){
+      let res
+      // 如果has_follow=true，说明已经关注，再次点击是想要取消关注
+      if(this.article.has_follow){
+        res=await unfollowUser(this.article.user.id)
+      }else{  // 否则说明已经取消关注，再次点击是想要关注
+        res=await followUser(this.article.user.id)
+      }
+      // 更新页面上是否已关注按钮的状态
+      this.article.has_follow=!this.article.has_follow
+      console.log(res);
+      // 提示用户是否关注（取消关注）成功
+      this.$toast.success(res.data.message)
+    }
   },
   // 注册过滤器
   filters: {
@@ -96,11 +114,15 @@ export default {
   }
   > span {
     padding: 5px 15px;
-    background-color: #f00;
-    color: #fff;
     text-align: center;
     border-radius: 15px;
     font-size: 13px;
+    border: 1px solid #ccc;
+    color: #000;
+    &.active{
+      background-color: #f00;
+      color: #fff;
+    }
   }
 }
 .detail {

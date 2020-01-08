@@ -37,3 +37,18 @@ export const usersRegister=(data)=>{
         data
     })
 }
+
+// 封装一个实现关注用户的方法
+export const followUser=(id)=>{
+    return axios({
+        url:`/user_follows/${id}`
+    })
+}
+
+// 封装一个实现取消关注用户的方法
+
+export const unfollowUser=(id)=>{
+    return axios({
+        url:`/user_unfollow/${id}`
+    })
+}
