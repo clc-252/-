@@ -20,18 +20,20 @@
       <van-tabs v-model="active" swipeable sticky>
         <!-- 动态渲染数据 -->
         <!-- 属性说明：immediate-check:是否默认触发一次load事件
-                      offset:	滚动条与底部距离小于 offset 时触发load事件 -->
+        offset:	滚动条与底部距离小于 offset 时触发load事件-->
         <van-tab :title="cate.name" v-for="cate in cateList" :key="cate.id">
           <van-list
             v-model="cate.loading"
             :finished="cate.finished"
             finished-text="没有更多了"
             @load="onLoad"
-            :immediate-check="false" 
+            :immediate-check="false"
             :offset="10"
           >
-            <!-- 新闻列表：生成当前栏目的文章列表数据 -->
-            <hmarticleblock v-for="item in cate.postList" :key="item.id" :post="item"></hmarticleblock>
+            <van-pull-refresh v-model="cate.isLoading" @refresh="onRefresh">
+              <!-- 新闻列表：生成当前栏目的文章列表数据 -->
+              <hmarticleblock v-for="item in cate.postList" :key="item.id" :post="item"></hmarticleblock>
+            </van-pull-refresh>
           </van-list>
         </van-tab>
       </van-tabs>
@@ -77,7 +79,8 @@ export default {
         pageSize: 5, // 这个栏目每页所显示的新闻条数
         // List 组件通过loading和finished两个变量控制加载状态，所以需要修改源数据，加入这两个变量来控制加载状态
         loading: false, // 表示这个栏目的加载状态
-        finished: false // 表示这个栏目的数据是否加载完成
+        finished: false, // 表示这个栏目的数据是否加载完成
+        isLoading: false // 表示这个栏目是否正在下拉刷新的状态
       };
     });
     console.log(this.cateList);
@@ -110,12 +113,20 @@ export default {
       // console.log(res2);
       // 得到当前栏目数据之后，再渲染到页面
       // this.cateList[this.active].postList = res2.data.data;
+
       // 当数据加载好之后，手动将当前栏目的lodaing重置为false
       this.cateList[this.active].loading = false;
+
+      // 当下拉加载完成之后，将isLoading置为false：表示加载完成
+      if (this.cateList[this.active].isLoading) {
+        this.cateList[this.active].isLoading = false;
+      }
+
       // 当数据加载完成之后，手动的将当前栏目的finished重置为true,以显示没有更多数据的提示
       if (res2.data.data.length < this.cateList[this.active].pageSize) {
         this.cateList[this.active].finished = true;
       }
+
       // 加载新的数据，将下一页的数据显示到下一页的内容中
       this.cateList[this.active].postList.push(...res2.data.data);
       console.log(this.cateList[this.active]);
@@ -123,11 +134,27 @@ export default {
 
     // 上拉加载
     onLoad() {
-      // 要让当前页码数+1
-      this.cateList[this.active].pageIndex++;
+      if (this.cateList[this.active].isLoading === false) {
+        // 要让当前页码数+1
+        this.cateList[this.active].pageIndex++;
+        setTimeout(() => {
+          this.handleData();
+        }, 1000);
+      }
+    },
+
+    // 下拉刷新
+    onRefresh() {
+      // 1.重新加载第一页
+      this.cateList[this.active].pageIndex = 1;
+      // 2.要把数据清空：将数组的长度置为0，可以将数组中的内容清空，如果使用=[],会重新创建一个空数组
+      this.cateList[this.active].postList.length = 0;
+      // 3.发送数据请求
       setTimeout(() => {
         this.handleData();
-      }, 3000);
+      }, 1000);
+      // 4.将finished置为false
+      this.cateList[this.active].finished = false;
     }
   }
 };
