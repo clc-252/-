@@ -15,3 +15,10 @@ export const getArticleById=(id)=>{
         url:`/post/${id}`
     })
 }
+
+// 3.封装一个实现点赞和取消赞的方法
+export const likeArticle=(id)=>{
+    return axios({
+        url:`/post_like/${id}`
+    })
+}

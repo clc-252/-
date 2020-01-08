@@ -5,7 +5,10 @@
         <van-icon name="arrow-left back" @click="$router.back()" />
         <span class="iconfont iconnew new"></span>
       </div>
-      <span :class="{active:article.has_follow}" @click="followThisUser">{{article.has_follow?'已关注':'关注'}}</span>
+      <span
+        :class="{active:article.has_follow}"
+        @click="followThisUser"
+      >{{article.has_follow?'已关注':'关注'}}</span>
     </div>
     <div class="detail">
       <div class="title">{{article.title}}</div>
@@ -18,7 +21,7 @@
       <!-- 当新闻是视频的时候 -->
       <video :src="article.content" v-if="article.type===2" controls></video>
       <div class="opt">
-        <span class="like">
+        <span class="like" :class="{active:article.has_like}" @click="likeThisArticle">
           <van-icon name="good-job-o" />
           {{article.like_length}}
         </span>
@@ -48,11 +51,12 @@
 
 <script>
 // 引入封装的根据新闻id获取新闻详情的方法
-import { getArticleById } from "@/apis/article.js";
+// 引入实现点赞和取消点赞的方法
+import { getArticleById, likeArticle } from "@/apis/article.js";
 // 引入全局过滤器
 import { dateFormat } from "@/utils/myfilters.js";
 // 引入实现关注和取消用户的方法
-import { followUser,unfollowUser } from "@/apis/user.js";
+import { followUser, unfollowUser } from "@/apis/user.js";
 export default {
   data() {
     return {
@@ -67,19 +71,35 @@ export default {
     console.log(res);
     this.article = res.data.data;
   },
-  methods:{
-    async followThisUser(){
-      let res
+  methods: {
+    // 关注和取消关注
+    async followThisUser() {
+      let res;
       // 如果has_follow=true，说明已经关注，再次点击是想要取消关注
-      if(this.article.has_follow){
-        res=await unfollowUser(this.article.user.id)
-      }else{  // 否则说明已经取消关注，再次点击是想要关注
-        res=await followUser(this.article.user.id)
+      if (this.article.has_follow) {
+        res = await unfollowUser(this.article.user.id);
+      } else {
+        // 否则说明已经取消关注，再次点击是想要关注
+        res = await followUser(this.article.user.id);
       }
       // 更新页面上是否已关注按钮的状态
-      this.article.has_follow=!this.article.has_follow
+      this.article.has_follow = !this.article.has_follow;
       console.log(res);
       // 提示用户是否关注（取消关注）成功
+      this.$toast.success(res.data.message);
+    },
+
+    // 点赞和取消点赞
+    async likeThisArticle() {
+      let res = await likeArticle(this.article.id);
+      // console.log(res);
+      if(res.data.message==='点赞成功'){
+        ++this.article.like_length
+      }else{
+        --this.article.like_length
+      }
+      // 更新页面上是否点赞的状态
+      this.article.has_like = !this.article.has_like;
       this.$toast.success(res.data.message)
     }
   },
@@ -119,7 +139,7 @@ export default {
     font-size: 13px;
     border: 1px solid #ccc;
     color: #000;
-    &.active{
+    &.active {
       background-color: #f00;
       color: #fff;
     }
@@ -166,6 +186,11 @@ export default {
     text-align: center;
     border: 1px solid #ccc;
     border-radius: 15px;
+  }
+  .like {
+    &.active {
+      color: red;
+    }
   }
   .w {
     color: rgb(84, 163, 5);
