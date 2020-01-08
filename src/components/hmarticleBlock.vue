@@ -1,6 +1,6 @@
 <template>
   <!-- 当type值为1，且只有一张照片的时候用这个新闻格式 -->
-  <div class="single" v-if="post.type===1&&post.cover.length===1">
+  <div class="single" v-if="post.type===1&&post.cover.length===1" @click="handleClick">
     <div class="left">
       <p class="content">{{post.title}}</p>
       <p class="info">
@@ -11,7 +11,7 @@
     <img :src="post.cover[0].url" />
   </div>
   <!-- 当type值为2，说明是一个视频，使用这个新闻模板格式 -->
-  <div class="single_video" v-else-if="post.type===2">
+  <div class="single_video" v-else-if="post.type===2" @click="handleClick">
     <p class="content">{{post.title}}</p>
     <div class="play_video">
       <img :src="post.cover[0].url" />
@@ -25,7 +25,7 @@
     </p>
   </div>
   <!-- 当type值为3，且照片数量大于三张的新闻结构 -->
-  <div class="single_three" v-else-if="post.type===1&&post.cover.length>=3">
+  <div class="single_three" v-else-if="post.type===1&&post.cover.length>=3" @click="handleClick">
     <p class="content">{{post.title}}</p>
     <div class="imgs">
       <img :src="item.url" v-for="item in post.cover" :key="item.id"/>
@@ -39,7 +39,12 @@
 
 <script>
 export default {
-  props: ["post"]
+  props: ["post"],
+  methods:{
+    handleClick(event){
+      this.$emit('click',event)
+    }
+  }
 };
 </script>
 

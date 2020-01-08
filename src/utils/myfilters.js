@@ -5,5 +5,5 @@ export const dateFormat = (time) => {
     let year = time.getFullYear()
     let month = time.getMonth() + 1
     let day = time.getDate()
-    return `${year}/${month}/${day}`
+    return `${year}-${month}-${day}`
 }

@@ -16,6 +16,8 @@ import EditPersonal from '@/views/EditPersonal.vue'
 import Index from '@/views/Index.vue'
 // 5.注册页面
 import Register from '@/views/Register.vue'
+// 6.新闻详情页
+import ArticleDetail from '@/views/ArticleDetail.vue'
 
 
 
@@ -52,6 +54,12 @@ let router = new VueRouter({
             name:'Register',
             path:'/register',
             component:Register
+        },
+        // 新闻详情页的路由
+        {
+            name:'ArticleDetail',
+            path:'/articleDetail/:id',
+            component:ArticleDetail
         }
     ]
 })

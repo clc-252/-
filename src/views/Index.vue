@@ -32,7 +32,7 @@
           >
             <van-pull-refresh v-model="cate.isLoading" @refresh="onRefresh">
               <!-- 新闻列表：生成当前栏目的文章列表数据 -->
-              <hmarticleblock v-for="item in cate.postList" :key="item.id" :post="item"></hmarticleblock>
+              <hmarticleblock v-for="item in cate.postList" :key="item.id" :post="item" @click="$router.push({path:`/articleDetail/${item.id}`})"></hmarticleblock>
             </van-pull-refresh>
           </van-list>
         </van-tab>
