@@ -46,6 +46,7 @@
       </div>
       <div class="more">更多跟帖</div>
     </div>
+    <hmCommentFooter :post="article"></hmCommentFooter>
   </div>
 </template>
 
@@ -57,6 +58,8 @@ import { getArticleById, likeArticle } from "@/apis/article.js";
 import { dateFormat } from "@/utils/myfilters.js";
 // 引入实现关注和取消用户的方法
 import { followUser, unfollowUser } from "@/apis/user.js";
+// 引入底部评论块
+import hmCommentFooter from "@/components/hmCommentFooter.vue"
 export default {
   data() {
     return {
@@ -102,6 +105,10 @@ export default {
       this.article.has_like = !this.article.has_like;
       this.$toast.success(res.data.message)
     }
+  },
+  //注册
+  components:{
+    hmCommentFooter
   },
   // 注册过滤器
   filters: {
@@ -198,7 +205,7 @@ export default {
 }
 .keeps {
   border-top: 5px solid #ddd;
-  padding: 0 15px;
+  padding: 0 15px 50px;
   > h2 {
     line-height: 50px;
     text-align: center;

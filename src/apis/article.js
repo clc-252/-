@@ -22,3 +22,10 @@ export const likeArticle=(id)=>{
         url:`/post_like/${id}`
     })
 }
+
+// 4.封装一个实现收藏和取消收藏的方法
+export const starArticle=(id)=>{
+    return axios({
+        url:`/post_star/${id}`
+    })
+}

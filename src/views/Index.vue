@@ -32,7 +32,12 @@
           >
             <van-pull-refresh v-model="cate.isLoading" @refresh="onRefresh">
               <!-- 新闻列表：生成当前栏目的文章列表数据 -->
-              <hmarticleblock v-for="item in cate.postList" :key="item.id" :post="item" @click="$router.push({path:`/articleDetail/${item.id}`})"></hmarticleblock>
+              <hmarticleblock
+                v-for="item in cate.postList"
+                :key="item.id"
+                :post="item"
+                @click="$router.push({path:`/articleDetail/${item.id}`})"
+              ></hmarticleblock>
             </van-pull-refresh>
           </van-list>
         </van-tab>
@@ -115,8 +120,9 @@ export default {
       // this.cateList[this.active].postList = res2.data.data;
 
       // 当数据加载好之后，手动将当前栏目的lodaing重置为false
-      this.cateList[this.active].loading = false;
-
+      if (this.cateList[this.active].loading) {
+        this.cateList[this.active].loading = false;
+      }
       // 当下拉加载完成之后，将isLoading置为false：表示加载完成
       if (this.cateList[this.active].isLoading) {
         this.cateList[this.active].isLoading = false;
