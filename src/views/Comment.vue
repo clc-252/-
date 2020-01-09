@@ -11,7 +11,7 @@
             <p>{{comment.user.nickname}}</p>
             <span>{{comment.user.create_date|dateFormat}}</span>
           </div>
-          <span>回复</span>
+          <span @click="sendComment(comment)">回复</span>
         </div>
         <!-- 使用commentItem -->
         <!-- 判断是否有上一层结构 -->
@@ -21,7 +21,7 @@
     </div>
     <!-- 底部评论块 -->
     <!-- 监听子组件的事件，刷新页面：refresh -->
-    <hmCommentFooter :post="article" @refresh="refresh"></hmCommentFooter>
+    <hmCommentFooter :post="article" @refresh="refresh" :getCommentData='commentData' @reset="commentData=''"></hmCommentFooter>
   </div>
 </template>
 
@@ -41,7 +41,9 @@ export default {
   data() {
     return {
       commentList: [],
-      article: {}
+      article: {},
+    //   这个对象就是当前回复的评论对象
+    commentData:''
     };
   },
   components: {
@@ -72,11 +74,18 @@ export default {
         return value;
       });
     },
+    // 刷新页面
     refresh() {
         // 重新刷新页面的内容：调用获取文章评论数据的方法
         this.getArticleComment()
         // 让页面滚动到最顶部
         window.scrollTo(0,0)
+    },
+    // 回复评论
+    sendComment(comment){
+        console.log(comment);
+        
+        this.commentData=comment
     }
   },
   //   注册全局过滤器

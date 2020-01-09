@@ -12,8 +12,8 @@
     <div class="inputcomment" v-show="isFocus">
       <textarea ref="commtext" rows="5"></textarea>
       <div>
-        <span @click="sendComment">发送</span>
-        <span @click="isFocus=false">取消</span>
+        <span @click="makeComment">发送</span>
+        <span @click="cancelReply">取消</span>
       </div>
     </div>
   </div>
@@ -22,7 +22,7 @@
 <script>
 import { starArticle, replyComment } from "@/apis/article.js";
 export default {
-  props: ["post"],
+  props: ["post","getCommentData"],
   data() {
     return {
       isFocus: false
@@ -43,11 +43,16 @@ export default {
       this.$toast.success(res.data.message);
     },
     // 发表评论
-    async sendComment() {
+    async makeComment() {
       // 获取用户在文本域中输入的数据
       let data = {
         content: this.$refs.commtext.value
       };
+      // 回复评论，要在data中添加parent_id属性，告诉我回复的是谁
+      if(this.getCommentData){
+        data.parent_id=this.getCommentData.id
+      }
+
       let res = await replyComment(this.post.id, data);
       console.log(res);
       if (res.data.message === "评论发布成功") {
@@ -57,6 +62,20 @@ export default {
         this.$refs.commtext.value = "";
         // 让父组件中的内容刷新
         this.$emit("refresh");
+      }
+    },
+    // 取消评论
+    cancelReply(){
+      this.isFocus=false
+      this.$emit('reset')
+    }
+  },
+  // 监听数据的变化，以改变isFocus的值
+  watch:{
+    getCommentData(){
+      // console.log(123);
+      if(this.getCommentData){
+        this.isFocus=true
       }
     }
   }
