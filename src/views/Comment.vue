@@ -9,10 +9,13 @@
           <img src="http://127.0.0.1:3000/uploads/image/IMG1568705287936.jpeg" alt />
           <div>
             <p>{{comment.user.nickname}}</p>
-            <span>{{comment.user.create_date}}</span>
+            <span>{{comment.user.create_date|dateFormat}}</span>
           </div>
           <span>回复</span>
         </div>
+        <!-- 使用commentItem -->
+        <!-- 判断是否有上一层结构 -->
+        <commentItem v-if="comment.parent" :parent="comment.parent"></commentItem>
         <div class="text">{{comment.content}}</div>
       </div>
     </div>
@@ -24,23 +27,35 @@
 import myheader from "@/components/hmheader.vue";
 // 引入实现获取新闻评论列表的方法
 import { getCommentList } from "@/apis/article.js";
+// 引入封装的评论块
+import commentItem from "@/components/hmCommentItem.vue";
+// 引入全局过滤器
+import { dateFormat } from "@/utils/myfilters.js";
 export default {
-    data(){
-        return {
-            commentList:[]
-        }
-    },
-  components: {
-    myheader
+  data() {
+    return {
+      commentList: []
+    };
   },
-  async mounted(){
-      let res=await getCommentList(this.$route.params.id,{pageSize:10,pageIndex:1})
-      console.log(res);
-      this.commentList=res.data.data.length?res.data.data:this.commentList
-      this.commentList=this.commentList.map(value=>{
-          value.user.head_img='http://127.0.0.1:3000' + value.user.head_img
-          return value
-      })
+  components: {
+    myheader,
+    commentItem
+  },
+  async mounted() {
+    let res = await getCommentList(this.$route.params.id, {
+      pageSize: 10,
+      pageIndex: 1
+    });
+    console.log(res);
+    this.commentList = res.data.data.length ? res.data.data : this.commentList;
+    this.commentList = this.commentList.map(value => {
+      value.user.head_img = "http://127.0.0.1:3000" + value.user.head_img;
+      return value;
+    });
+  },
+  //   注册全局过滤器
+  filters: {
+    dateFormat
   }
 };
 </script>
