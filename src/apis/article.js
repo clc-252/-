@@ -29,3 +29,11 @@ export const starArticle=(id)=>{
         url:`/post_star/${id}`
     })
 }
+
+// 5.封装一个实现获取新闻评论列表的方法
+export const getCommentList=(id,params)=>{
+    return axios({
+        url:`/post_comment/${id}`,
+        params
+    })
+}
