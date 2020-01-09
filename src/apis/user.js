@@ -46,9 +46,15 @@ export const followUser=(id)=>{
 }
 
 // 封装一个实现取消关注用户的方法
-
 export const unfollowUser=(id)=>{
     return axios({
         url:`/user_unfollow/${id}`
+    })
+}
+
+// 获取用户关注列表的方法
+export const getUserFollows=()=>{
+    return axios({
+        url:'/user_follows'
     })
 }

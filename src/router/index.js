@@ -18,6 +18,8 @@ import Index from '@/views/Index.vue'
 import Register from '@/views/Register.vue'
 // 6.新闻详情页
 import ArticleDetail from '@/views/ArticleDetail.vue'
+// 7.我的关注
+import MyFollows from '@/views/MyFollows.vue'
 
 
 
@@ -60,6 +62,12 @@ let router = new VueRouter({
             name:'ArticleDetail',
             path:'/articleDetail/:id',
             component:ArticleDetail
+        },
+        // 我的关注的路由
+        {
+            name:'MyFollows',
+            path:'/myFollows',
+            component:MyFollows
         }
     ]
 })
