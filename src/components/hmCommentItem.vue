@@ -1,5 +1,7 @@
 <template>
   <div class="commentItem">
+      <!-- 组件递归：在组件内部使用组件自身，将嵌套的数据重新赋值给prop设置的属性 -->
+    <commentItem v-if="parent.parent" :parent="parent.parent"></commentItem>
     <div class="top">
       <div class="left">
         <span>{{parent.user.nickname}}</span> &nbsp;
@@ -15,6 +17,8 @@
 // 引入全局过滤器
 import { dateFormat } from "@/utils/myfilters.js";
 export default {
+  // 在组件中使用name属性，给组件自己定义个名字，这样在组件中就可以自己调用自己了
+  name:'commentItem',
   props: ["parent"],
   // 注册全局过滤器
   filters: {
