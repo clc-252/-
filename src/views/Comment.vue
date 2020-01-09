@@ -1,6 +1,6 @@
 <template>
   <div class="comments">
-    <myheader title="我的收藏">
+    <myheader title="精彩评论">
       <span slot="left" class="iconfont iconjiantou2" @click="$router.back()"></span>
     </myheader>
     <div class="lists">
@@ -20,7 +20,8 @@
       </div>
     </div>
     <!-- 底部评论块 -->
-    <hmCommentFooter :post="article"></hmCommentFooter>
+    <!-- 监听子组件的事件，刷新页面：refresh -->
+    <hmCommentFooter :post="article" @refresh="refresh"></hmCommentFooter>
   </div>
 </template>
 
@@ -29,18 +30,18 @@
 import myheader from "@/components/hmheader.vue";
 // 引入实现获取新闻评论列表的方法
 // 引入实现根据新闻id获取新闻详情的方法
-import { getCommentList,getArticleById } from "@/apis/article.js";
+import { getCommentList, getArticleById } from "@/apis/article.js";
 // 引入封装的评论块
 import commentItem from "@/components/hmCommentItem.vue";
 // 引入全局过滤器
 import { dateFormat } from "@/utils/myfilters.js";
 // 引入底部评论块
-import hmCommentFooter from "@/components/hmCommentFooter.vue"
+import hmCommentFooter from "@/components/hmCommentFooter.vue";
 export default {
   data() {
     return {
       commentList: [],
-      article:{}
+      article: {}
     };
   },
   components: {
@@ -50,20 +51,33 @@ export default {
   },
   async mounted() {
     //   获取文章评论数据
-    let res = await getCommentList(this.$route.params.id, {
-      pageSize: 10,
-      pageIndex: 1
-    });
-    console.log(res);
-    this.commentList = res.data.data.length ? res.data.data : this.commentList;
-    this.commentList = this.commentList.map(value => {
-      value.user.head_img = "http://127.0.0.1:3000" + value.user.head_img;
-      return value;
-    });
-
+    this.getArticleComment()
     // 获取文章数据
-    let articleData=await getArticleById(this.$route.params.id)
-    this.article=articleData.data.data
+    let articleData = await getArticleById(this.$route.params.id);
+    this.article = articleData.data.data;
+  },
+  methods: {
+    //   将获取文章评论数据的操作封装起来
+    async getArticleComment() {
+      let res = await getCommentList(this.$route.params.id, {
+        pageSize: 10,
+        pageIndex: 1
+      });
+      console.log(res);
+      this.commentList = res.data.data.length
+        ? res.data.data
+        : this.commentList;
+      this.commentList = this.commentList.map(value => {
+        value.user.head_img = "http://127.0.0.1:3000" + value.user.head_img;
+        return value;
+      });
+    },
+    refresh() {
+        // 重新刷新页面的内容：调用获取文章评论数据的方法
+        this.getArticleComment()
+        // 让页面滚动到最顶部
+        window.scrollTo(0,0)
+    }
   },
   //   注册全局过滤器
   filters: {
@@ -73,8 +87,8 @@ export default {
 </script>
 
 <style lang='less' scoped>
-.comments{
-    padding-bottom: 50px;
+.comments {
+  padding-bottom: 50px;
 }
 .lists {
   border-top: 5px solid #ddd;

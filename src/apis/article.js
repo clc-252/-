@@ -37,3 +37,12 @@ export const getCommentList=(id,params)=>{
         params
     })
 }
+
+// 6.封装一个实现发布评论的方法
+export const replyComment=(id,data)=>{
+    return axios({
+        method:'post',
+        url:`/post_comment/${id}`,
+        data
+    })
+}

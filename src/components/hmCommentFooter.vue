@@ -1,6 +1,6 @@
 <template>
   <div class="commentFooter">
-    <div class="addcomment" v-show='!isFocus'>
+    <div class="addcomment" v-show="!isFocus">
       <input type="text" placeholder="写跟帖" @focus="handlerFocus" />
       <span class="comment">
         <i class="iconfont iconpinglun-" @click="$router.push({path:`/comment/${post.id}`})"></i>
@@ -9,78 +9,96 @@
       <i class="iconfont iconshoucang" @click="starThisArticle" :class="{active:post.has_star}"></i>
       <i class="iconfont iconfenxiang"></i>
     </div>
-    <div class="inputcomment" v-show='isFocus'>
-        <textarea  ref='commtext' rows="5" @blur='isFocus = false'></textarea>
-        <div>
-            <span>发送</span>
-        </div>
+    <div class="inputcomment" v-show="isFocus">
+      <textarea ref="commtext" rows="5"></textarea>
+      <div>
+        <span @click="sendComment">发送</span>
+        <span @click="isFocus=false">取消</span>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import {starArticle} from '@/apis/article.js'
+import { starArticle, replyComment } from "@/apis/article.js";
 export default {
-    props:["post"],
-  data () {
+  props: ["post"],
+  data() {
     return {
       isFocus: false
-    }
+    };
   },
   methods: {
     //   获取焦点时触发
-    handlerFocus () {
-      this.isFocus = !this.isFocus
-      this.$refs.commtext.focus()
+    handlerFocus() {
+      this.isFocus = !this.isFocus;
+      this.$refs.commtext.focus();
     },
     // 收藏文章
-    async starThisArticle(){
-        let res=await starArticle(this.post.id)
-        console.log(res);
-        // 修改has_star的值
-        this.post.has_star=!this.post.has_star
-        this.$toast.success(res.data.message)
+    async starThisArticle() {
+      let res = await starArticle(this.post.id);
+      console.log(res);
+      // 修改has_star的值
+      this.post.has_star = !this.post.has_star;
+      this.$toast.success(res.data.message);
+    },
+    // 发表评论
+    async sendComment() {
+      // 获取用户在文本域中输入的数据
+      let data = {
+        content: this.$refs.commtext.value
+      };
+      let res = await replyComment(this.post.id, data);
+      console.log(res);
+      if (res.data.message === "评论发布成功") {
+        // 把文本域隐藏
+        this.isFocus = false;
+        // 清空文本域中的内容
+        this.$refs.commtext.value = "";
+        // 让父组件中的内容刷新
+        this.$emit("refresh");
+      }
     }
   }
-}
+};
 </script>
 
 <style lang='less' scoped>
-.commentFooter{
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    width: 100%;
+.commentFooter {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
 }
-.inputcomment{
+.inputcomment {
+  padding: 10px;
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  background-color: #fff;
+  align-items: flex-end;
+  textarea {
+    flex: 3;
+    background-color: #eee;
+    border: none;
+    border-radius: 10px;
     padding: 10px;
-    box-sizing: border-box;
-    width: 100%;
-    display: flex;
-    background-color: #fff;
-    align-items: flex-end;
-    textarea{
-        flex: 3;
-        background-color: #eee;
-        border:none;
-        border-radius: 10px;
-        padding: 10px;
-    }
-    div{
-        padding: 20px;
-    }
-    span {
-        display: block;
-        flex: 1;
-        height: 24px;
-        line-height: 24px;
-        padding: 0 10px;
-        background-color: #f00;
-        color:#fff;
-        text-align: center;
-        border-radius: 6px;
-        font-size: 13px;
-    }
+  }
+  div {
+    padding: 20px;
+  }
+  span {
+    display: block;
+    flex: 1;
+    height: 24px;
+    line-height: 24px;
+    padding: 0 10px;
+    background-color: #f00;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    font-size: 13px;
+  }
 }
 .addcomment {
   width: 100%;
@@ -124,7 +142,7 @@ export default {
     flex: 1;
   }
 }
-.active{
-    color: #f00;
+.active {
+  color: #f00;
 }
 </style>
