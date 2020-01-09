@@ -20,6 +20,9 @@ import Register from '@/views/Register.vue'
 import ArticleDetail from '@/views/ArticleDetail.vue'
 // 7.我的关注
 import MyFollows from '@/views/MyFollows.vue'
+// 8.我的收藏
+import MyStars from '@/views/MyStars.vue'
+
 
 
 
@@ -68,6 +71,12 @@ let router = new VueRouter({
             name:'MyFollows',
             path:'/myFollows',
             component:MyFollows
+        },
+        // 我的收藏的路由
+        {
+            name:'MyStars',
+            path:'/myStars',
+            component:MyStars
         }
     ]
 })

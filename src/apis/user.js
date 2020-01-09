@@ -58,3 +58,10 @@ export const getUserFollows=()=>{
         url:'/user_follows'
     })
 }
+
+// 获取用户收藏列表的方法
+export const getUserStars=()=>{
+    return axios({
+        url:'/user_star'
+    })
+}
