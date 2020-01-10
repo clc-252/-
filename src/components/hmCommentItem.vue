@@ -7,7 +7,7 @@
         <span>{{parent.user.nickname}}</span> &nbsp;
         <span>{{parent.create_date|dateFormat}}</span>
       </div>
-      <span>回复</span>
+      <span @click="sendComment(parent)">回复</span>
     </div>
     <div class="bottom">{{parent.content}}</div>
   </div>
@@ -23,6 +23,12 @@ export default {
   // 注册全局过滤器
   filters: {
     dateFormat
+  },
+  methods:{
+    sendComment(comment){
+      console.log(comment);
+      this.$emit('replyComment',comment)
+    }
   }
 };
 </script>

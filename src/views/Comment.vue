@@ -15,7 +15,7 @@
         </div>
         <!-- 使用commentItem -->
         <!-- 判断是否有上一层结构 -->
-        <commentItem v-if="comment.parent" :parent="comment.parent"></commentItem>
+        <commentItem v-if="comment.parent" :parent="comment.parent" @replyComment="sendComment"></commentItem>
         <div class="text">{{comment.content}}</div>
       </div>
     </div>
