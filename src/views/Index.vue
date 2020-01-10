@@ -13,6 +13,7 @@
       <div class="user" @click="$router.push({path: `/personal/${id}`})">
         <van-icon name="manager-o" />
       </div>
+      <div class="skipCate" @click="$router.push({ name:'CateManager'})">123</div>
     </div>
     <!-- 标签栏 -->
     <div class="nav">
@@ -197,5 +198,31 @@ export default {
     font-size: 26px;
     padding: 0 10px 0 20px;
   }
+}
+.nav {
+  /deep/.van-sticky {
+    padding-right: 20px;
+    &::after {
+      content: "+";
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 44px;
+      font-size: 30px;
+      line-height: 40px;
+      background-color: #fff;
+      padding-right: 8px;
+    }
+  }
+}
+.skipCate {
+  position: absolute;
+  z-index: 50;
+  top: 0;
+  right: 0;
+  width: 26px;
+  height: 44px;
+  // opacity: 0;
+  background-color: #f00;
 }
 </style>

@@ -24,6 +24,8 @@ import MyFollows from '@/views/MyFollows.vue'
 import MyStars from '@/views/MyStars.vue'
 // 9.精彩评论
 import Comment from '@/views/Comment.vue'
+// 10.栏目管理
+import CateManager from '@/views/CateManager.vue'
 
 
 
@@ -85,6 +87,12 @@ let router = new VueRouter({
             name:'Comment',
             path:'/comment/:id',
             component:Comment
+        },
+        // 栏目管理的路由
+        {
+            name:'CateManager',
+            path:'/cateManager',
+            component:CateManager
         }
     ]
 })
