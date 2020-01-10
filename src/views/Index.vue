@@ -13,7 +13,6 @@
       <div class="user" @click="$router.push({path: `/personal/${id}`})">
         <van-icon name="manager-o" />
       </div>
-      <div class="skipCate" @click="$router.push({ name:'CateManager'})">123</div>
     </div>
     <!-- 标签栏 -->
     <div class="nav">
@@ -65,14 +64,42 @@ export default {
   },
   // 页面一加载就需要获取到所有栏目的数据
   async mounted() {
+    // 添加事件
+    document.querySelector('.van-sticky').onclick=(e)=>{
+      console.log(123);
+      console.log(e.target.className);
+      if(e.target.className==='van-sticky'){
+        this.$router.push({ name:'CateManager'})
+      }
+      return false
+    }
     // 获取用户id，用户跳转到个人中心页
-    this.id = JSON.parse(localStorage.getItem("userData")).id;
-    // 获取所有栏目数据
-    let res = await getCategoryList();
-    console.log(res);
-    // 将栏目数据存到cateList中
-    this.cateList = res.data.data;
-    // console.log(this.cateList);
+    this.id = JSON.parse(localStorage.getItem("userData") || "{}").id;
+
+    if (localStorage.getItem("remove_cate_list")) {
+      // 如果本地存储中有用户在栏目管理页面操作之后存储的栏目数据，就在本地存储中取数据
+      this.cateList = JSON.parse(localStorage.getItem("remove_cate_list"));
+      // 手动将'关注'和'头条'这两个栏目加回去
+      if (localStorage.getItem("userLogin_token")) {
+        this.cateList.unshift(
+          ...[
+            { id: 0, name: "关注", is_top: 1 },
+            { id: 999, name: "头条", is_top: 1 }
+          ]
+        );
+      } else {
+        this.cateList.unshift({ id: 999, name: "头条", is_top: 1 });
+      }
+    } else {
+      // 如果没有，再从数据库中拿栏目数据
+      // 获取所有栏目数据
+      let res = await getCategoryList();
+      console.log(res);
+      // 将栏目数据存到cateList中
+      this.cateList = res.data.data;
+    }
+
+    console.log(this.cateList);
 
     // ------------------------------- 重点理解内容：对数据进行改造 ------------------------------------
     // 基于业务需求，我们可以对源数据进行改造，我们可以在每一个栏目对象中，添加用于存储这个栏目新闻数据的数组
@@ -214,15 +241,5 @@ export default {
       padding-right: 8px;
     }
   }
-}
-.skipCate {
-  position: absolute;
-  z-index: 50;
-  top: 0;
-  right: 0;
-  width: 26px;
-  height: 44px;
-  // opacity: 0;
-  background-color: #f00;
 }
 </style>
