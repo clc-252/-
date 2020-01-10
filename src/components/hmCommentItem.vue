@@ -1,7 +1,7 @@
 <template>
   <div class="commentItem">
       <!-- 组件递归：在组件内部使用组件自身，将嵌套的数据重新赋值给prop设置的属性 -->
-    <commentItem v-if="parent.parent" :parent="parent.parent"></commentItem>
+    <commentItem v-if="parent.parent" :parent="parent.parent" @replyComment='sendComment'></commentItem>
     <div class="top">
       <div class="left">
         <span>{{parent.user.nickname}}</span> &nbsp;

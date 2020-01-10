@@ -10,7 +10,7 @@
       <i class="iconfont iconfenxiang"></i>
     </div>
     <div class="inputcomment" v-show="isFocus">
-      <textarea ref="commtext" rows="5"></textarea>
+      <textarea ref="commtext" rows="5" :placeholder="placeholder"></textarea>
       <div>
         <span @click="makeComment">发送</span>
         <span @click="cancelReply">取消</span>
@@ -22,17 +22,20 @@
 <script>
 import { starArticle, replyComment } from "@/apis/article.js";
 export default {
-  props: ["post","getCommentData"],
+  props: ["post", "getCommentData"],
   data() {
     return {
-      isFocus: false
+      isFocus: false,
+      placeholder:''
     };
   },
   methods: {
     //   获取焦点时触发
     handlerFocus() {
       this.isFocus = !this.isFocus;
-      this.$refs.commtext.focus();
+      setTimeout(() => {
+        this.$refs.commtext.focus();
+      }, 100);
     },
     // 收藏文章
     async starThisArticle() {
@@ -49,8 +52,8 @@ export default {
         content: this.$refs.commtext.value
       };
       // 回复评论，要在data中添加parent_id属性，告诉我回复的是谁
-      if(this.getCommentData){
-        data.parent_id=this.getCommentData.id
+      if (this.getCommentData) {
+        data.parent_id = this.getCommentData.id;
       }
 
       let res = await replyComment(this.post.id, data);
@@ -65,17 +68,21 @@ export default {
       }
     },
     // 取消评论
-    cancelReply(){
-      this.isFocus=false
-      this.$emit('reset')
+    cancelReply() {
+      this.isFocus = false;
+      this.$emit("reset");
     }
   },
   // 监听数据的变化，以改变isFocus的值
-  watch:{
-    getCommentData(){
-      // console.log(123);
-      if(this.getCommentData){
-        this.isFocus=true
+  watch: {
+    getCommentData() {
+      console.log(this.getCommentData);
+      if (this.getCommentData) {
+        this.isFocus = true;
+        setTimeout(() => {
+          this.$refs.commtext.focus();
+        }, 100);
+        this.placeholder='@'+this.getCommentData.user.nickname
       }
     }
   }
