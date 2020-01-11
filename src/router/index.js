@@ -26,6 +26,8 @@ import MyStars from '@/views/MyStars.vue'
 import Comment from '@/views/Comment.vue'
 // 10.栏目管理
 import CateManager from '@/views/CateManager.vue'
+// 搜索页面
+import Search from '@/views/Search.vue'
 
 
 
@@ -93,6 +95,12 @@ let router = new VueRouter({
             name:'CateManager',
             path:'/cateManager',
             component:CateManager
+        },
+        // 搜索页面的路由
+        {
+            name:'Search',
+            path:'/Search',
+            component:Search
         }
     ]
 })

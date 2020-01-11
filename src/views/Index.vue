@@ -5,7 +5,7 @@
       <div class="logo">
         <span class="iconfont iconnew"></span>
       </div>
-      <div class="search">
+      <div class="search" @click="$router.push({name:'Search'})">
         <i class="iconfont iconsearch"></i>&nbsp;
         <span>搜索新闻</span>
       </div>
@@ -66,9 +66,9 @@ export default {
   async mounted() {
     // 添加事件
     document.querySelector('.van-sticky').onclick=(e)=>{
-      console.log(123);
-      console.log(e.target.className);
-      if(e.target.className==='van-sticky'){
+      // console.log(123);
+      // console.log(e.target);
+      if(e.target.className==='van-sticky'|| e.target.className==='van-sticky van-sticky--fixed'){
         this.$router.push({ name:'CateManager'})
       }
       return false

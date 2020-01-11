@@ -46,3 +46,11 @@ export const replyComment=(id,data)=>{
         data
     })
 }
+
+// 封装一个实现文章搜索的方法
+export const searchArticle=(params)=>{
+    return axios({
+        url:'/post_search',
+        params
+    })
+}
