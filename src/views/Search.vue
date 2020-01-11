@@ -3,12 +3,12 @@
     <div class="header">
       <span class="iconfont iconjiantou2" @click="$router.back()"></span>
       <van-search v-model="userKey" placeholder="请输入搜索关键词" shape="round"></van-search>
-      <div @click="onSearch">搜索</div>
+      <div @click="onSearch(userKey)">搜索</div>
     </div>
     <div class="historyList">
       <h2>历史记录</h2>
-      <router-link to>美女</router-link>
-      <router-link to>美女</router-link>
+      <!-- <router-link to='' v-for="(item,index) in historyList" :key="index" @click="onSearch">{{item}}</router-link> -->
+      <a href="javascript:;" v-for="(item,index) in historyList" :key="index" @click="onSearch(item)">{{item}}</a>
     </div>
     <div class="historyList">
       <h2>搜索结果</h2>
@@ -28,16 +28,33 @@ export default {
   data() {
     return {
       userKey: "",
-      searchList: []
+      searchList: [],
+      historyList:[]
     };
   },
+  mounted(){
+      this.historyList=this.getData()
+  },
   methods: {
-    async onSearch() {
-      let res = await searchArticle({ keyword: this.userKey });
+    async onSearch(key) {
+      let res = await searchArticle({ keyword: key});
       // console.log(res);
       if (res.data.data.length > 0) {
         this.searchList = res.data.data;
       }
+    //   将关键字存储到本地
+    let arr=this.getData()
+    // 判断当前数组中是否已经存在该关键字
+    let index=arr.indexOf(key)
+    if(index!==-1){
+        arr.splice(index,1)
+    }
+    arr.unshift(key)
+    localStorage.setItem('search_history_userkey',JSON.stringify(arr))
+    },
+    // 获取之前存储的历史关键字
+    getData(){
+        return JSON.parse(localStorage.getItem('search_history_userkey')||'[]')
     }
   }
 };
