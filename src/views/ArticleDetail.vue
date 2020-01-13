@@ -170,11 +170,15 @@ export default {
     font-size: 15px;
     padding-bottom: 30px;
     width: 100%;
-    /deep/.photo {
-      img {
-        display: block;
-        width: 100%;
-      }
+    // /deep/.photo {
+    //   img {
+    //     display: block;
+    //     width: 100%;
+    //   }
+    // }
+    /deep/img{
+      width: 100%;
+      display: block
     }
   }
   video {

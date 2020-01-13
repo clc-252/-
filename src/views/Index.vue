@@ -147,6 +147,16 @@ export default {
       // 得到当前栏目数据之后，再渲染到页面
       // this.cateList[this.active].postList = res2.data.data;
 
+      // 判断入如果图片路径中没有http://127.0.0.1:3000，则进行拼接
+      // 由于url在res.data.data.cover中，所以需要些两重循环
+      for(let i=0;i<res2.data.data.length;i++){
+        for(let j=0;j<res2.data.data[i].cover.length;j++){
+          if(res2.data.data[i].cover[j].url.indexOf('http')===-1){
+            res2.data.data[i].cover[j].url='http://127.0.0.1:3000'+res2.data.data[i].cover[j].url
+          }
+        }
+      }
+
       // 当数据加载好之后，手动将当前栏目的lodaing重置为false
       if (this.cateList[this.active].loading) {
         this.cateList[this.active].loading = false;
